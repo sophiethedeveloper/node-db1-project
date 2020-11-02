@@ -18,6 +18,10 @@ const Accounts = {
 
     update(id, account) {
         return db('accounts').where({ id }).update(account)
+    }, 
+
+    delete(id) {
+        return db('accounts').where({id}).del()
     }
 }
 
@@ -74,6 +78,16 @@ router.put("/:id", (req, res) => {
     })
     .catch(error => {
         res.status(500).json({error: error.message})
+    })
+})
+
+router.delete("/:id", (req, res) => {
+    Accounts.delete(req.params.id) 
+    .then(() => {
+        res.status(200).json({message: 'account has been deleted'})
+    })
+    .catch(error => {
+        res.status(500).json({message: error.message})
     })
 })
 
