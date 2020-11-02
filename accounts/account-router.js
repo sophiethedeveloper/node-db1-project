@@ -9,7 +9,7 @@ const Accounts = {
     },
 
     getById(id) {
-
+        return db('accounts').where({ id }).first()
     }
 }
 
@@ -24,5 +24,19 @@ router.get('/', (req, res) => {
     })
 })
 
+router.get('/:id', (req, res) => {
+    Accounts.getById(req.params.id)
+    .then((account) => {
+        if (account) {
+            res.status(200).json(account)
+        } else {
+            res.status(404).json({message: 'id not found'})
+        }
+    })
+    .catch(error => {
+        // res.json({ message: 'oops, something went wrong' }) // production
+        res.json({ error: error.message }) // development
+    })
+})
 
 module.exports = router;
