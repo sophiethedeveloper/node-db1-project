@@ -15,6 +15,10 @@ const Accounts = {
     addAccount(account) {
         return db('accounts').insert(account)
     },
+
+    update(id, account) {
+        return db('accounts').where({ id }).update(account)
+    }
 }
 
 router.get('/', (req, res) => {
@@ -24,7 +28,7 @@ router.get('/', (req, res) => {
     })
     .catch(error => {
         // res.json({ message: 'oops, something went wrong' }) // production
-        res.json({ error: error.message }) // development
+        res.status(500).res.json({ error: error.message }) // development
     })
 })
 
@@ -39,7 +43,7 @@ router.get('/:id', (req, res) => {
     })
     .catch(error => {
         // res.json({ message: 'oops, something went wrong' }) // production
-        res.json({ error: error.message }) // development
+        res.status(500).res.json({ error: error.message }) // development
     })
 })
 
@@ -52,7 +56,24 @@ router.post("/", (req, res) => {
         res.status(200).json(newAccount)
     })
     .catch(error => {
-        res.json({error: error.message})
+        res.status(500).res.json({error: error.message})
+    })
+})
+
+router.put("/:id", (req, res) => {
+    Accounts.update(req.params.id, req.body)
+    .then((updated) => {
+        if(!updated) {
+            res.status(404).json({message: 'No account with this id'})
+        } else {
+            return Accounts.getById(req.params.id).first()
+        }
+    })
+    .then((updatedAccount) => {
+        res.status(200).json(updatedAccount)
+    })
+    .catch(error => {
+        res.status(500).json({error: error.message})
     })
 })
 
