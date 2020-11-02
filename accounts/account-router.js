@@ -10,7 +10,11 @@ const Accounts = {
 
     getById(id) {
         return db('accounts').where({ id }).first()
-    }
+    },
+
+    addAccount(account) {
+        return db('accounts').insert(account)
+    },
 }
 
 router.get('/', (req, res) => {
@@ -36,6 +40,19 @@ router.get('/:id', (req, res) => {
     .catch(error => {
         // res.json({ message: 'oops, something went wrong' }) // production
         res.json({ error: error.message }) // development
+    })
+})
+
+router.post("/", (req, res) => {
+    Accounts.addAccount(req.body) 
+    .then(([id]) => {
+        return Accounts.getById(id).first()
+    })
+    .then((newAccount) => {
+        res.status(200).json(newAccount)
+    })
+    .catch(error => {
+        res.json({error: error.message})
     })
 })
 
